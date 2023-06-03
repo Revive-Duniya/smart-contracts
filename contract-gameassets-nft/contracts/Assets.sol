@@ -10,16 +10,20 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 contract Assets is ExpiryHelper {
     struct Asset {
         string name;
+        string ipfsimageUri;
+        bool hidenAsset;
+        uint assetId;
+        uint price;
     }
     event CreatedToken(address tokenAddress);
     event MintedToken(int64[] serialNumbers);
     event Response(int256 response);
 
-    mapping(uint=>Asset) public assets;
-    mapping(string=>Asset) public assetid;
+    mapping(uint=>Asset) public assetsData; //Name => Asset
+    mapping(string=>uint) public assetsId;
+    uint public assetsAmount;
     address public NftCollectionAddress;
     address public owner;
-    uint256 public lockupAmount = 100000000000;
 
     constructor() payable {
         IHederaTokenService.TokenKey[]
@@ -52,7 +56,13 @@ contract Assets is ExpiryHelper {
         owner = msg.sender;
     }
 
-    function addAsset(string memory name, string memory ipfsimage) public {}
+    function addAsset(string memory name, string memory ipfsimage,uint price) public {
+        require(owner == msg.sender);
+        require(assetsId[name] == 0,"Asset created");
+        assetsAmount += 1;
+        assetsId[name] = assetsAmount;
+        assetsData[assetsAmount] = Asset(name,ipfsimage,false,assetsAmount,price);
+    }
 
     function hideAsset(uint256 _assetId) public {}
 
@@ -61,7 +71,26 @@ contract Assets is ExpiryHelper {
         pure
         returns (string memory)
     {
-        
+        string memory json = Base64.encode(
+            bytes(
+                string(
+                    abi.encodePacked(
+                        '{"name": "',
+                        name,
+                        Strings.toString(tokenId),
+                        '","assetid":"',Strings.toString(assetId),'", "description": "An in-game monster", "image": "data:image/svg+xml;base64,',
+                        ipfsimage,
+                        '"}'
+                    )
+                )
+            )
+        );
+
+        string memory metadata = string(
+            abi.encodePacked("data:application/json;base64,", json)
+        );
+
+        return metadata;
     }
 
     function mintNFT(address token, bytes[] memory metadata) private {
@@ -75,5 +104,4 @@ contract Assets is ExpiryHelper {
         emit MintedToken(serial);
     }
 
-    
 }
