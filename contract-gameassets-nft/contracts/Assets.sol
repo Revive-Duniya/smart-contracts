@@ -21,6 +21,7 @@ contract Assets is ExpiryHelper {
 
     mapping(uint=>Asset) public assetsData; //Name => Asset
     mapping(string=>uint) public assetsId;
+    Asset[] assets;
     uint public assetsAmount;
     uint public tokenAmount;
     address public NftCollectionAddress;
@@ -63,19 +64,27 @@ contract Assets is ExpiryHelper {
         assetsAmount += 1;
         assetsId[name] = assetsAmount;
         assetsData[assetsAmount] = Asset(name,ipfsimage,false,assetsAmount,price);
+        assets.push(Asset(name,ipfsimage,false,assetsAmount,price));
     }
 
     function hideAsset(uint256 _assetId) public {
         require(owner == msg.sender);
         assetsData[_assetId].hidden = true;
+        assets[_assetId -1].hidden = true;
     }
 
     function show(uint256 _assetId) public {
         require(owner == msg.sender);
         assetsData[_assetId].hidden = false;
+        assets[_assetId -1].hidden = false;
+
     }
 
-    function getAsset(uint256 _assetId)public payable{
+    function getAllAssets()public view returns(Asset[] memory){
+        return assets;
+    }
+
+    function mintAsset(uint256 _assetId)public payable{
         //require asset bought
         require(assetsData[_assetId].price >= msg.value);
         //increase tokenAmount
