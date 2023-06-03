@@ -65,7 +65,14 @@ contract Assets is ExpiryHelper {
     }
 
     function mintNFT(address token, bytes[] memory metadata) private {
-        
+        (int256 response, , int64[] memory serial) = HederaTokenService
+            .mintToken(token, 0, metadata);
+
+        if (response != HederaResponseCodes.SUCCESS) {
+            revert("Failed to mint non-fungible token");
+        }
+
+        emit MintedToken(serial);
     }
 
     
