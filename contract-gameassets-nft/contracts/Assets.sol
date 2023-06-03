@@ -11,7 +11,7 @@ contract Assets is ExpiryHelper {
     struct Asset {
         string name;
         string ipfsimageUri;
-        bool hidenAsset;
+        bool hidden;
         uint assetId;
         uint price;
     }
@@ -64,7 +64,15 @@ contract Assets is ExpiryHelper {
         assetsData[assetsAmount] = Asset(name,ipfsimage,false,assetsAmount,price);
     }
 
-    function hideAsset(uint256 _assetId) public {}
+    function hideAsset(uint256 _assetId) public {
+        require(owner == msg.sender);
+        assetsData[_assetId].hidden = true;
+    }
+
+    function show(uint256 _assetId) public {
+        require(owner == msg.sender);
+        assetsData[_assetId].hidden = false;
+    }
 
     function generateMetadata(uint256 tokenId,uint256 assetId, string memory name,string memory ipfsimage)
         private
