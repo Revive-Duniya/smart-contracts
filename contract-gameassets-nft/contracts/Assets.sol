@@ -22,6 +22,7 @@ contract Assets is ExpiryHelper {
     mapping(uint=>Asset) public assetsData; //Name => Asset
     mapping(string=>uint) public assetsId;
     uint public assetsAmount;
+    uint public tokenAmount;
     address public NftCollectionAddress;
     address public owner;
 
@@ -74,10 +75,27 @@ contract Assets is ExpiryHelper {
         assetsData[_assetId].hidden = false;
     }
 
+    function getAsset(uint256 _assetId)public payable{
+        //require asset bought
+        require(assetsData[_assetId].price >= msg.value);
+        //increase tokenAmount
+        tokenAmount += 1;
+        //create metadata 
+        bytes[] memory metadata = generateMetadata(tokenAmount,_assetId,assetsData[_assetId].name,assetsData[_assetId].ipfsimageUri);
+
+
+        (int256 response, , int64[] memory serial) = HederaTokenService
+            .mintToken(NftCollectionAddress, 0, metadata);
+
+        if (response != HederaResponseCodes.SUCCESS) {
+            revert("Failed to mint non-fungible token");
+        }
+    }
+
     function generateMetadata(uint256 tokenId,uint256 assetId, string memory name,string memory ipfsimage)
         private
         pure
-        returns (string memory)
+        returns (bytes[] memory)
     {
         string memory json = Base64.encode(
             bytes(
@@ -98,18 +116,10 @@ contract Assets is ExpiryHelper {
             abi.encodePacked("data:application/json;base64,", json)
         );
 
-        return metadata;
-    }
+        bytes[] memory metadataBytes = new bytes[](1);
+        metadataBytes[0] = bytes(metadata); // Convert string to bytes array
 
-    function mintNFT(address token, bytes[] memory metadata) private {
-        (int256 response, , int64[] memory serial) = HederaTokenService
-            .mintToken(token, 0, metadata);
-
-        if (response != HederaResponseCodes.SUCCESS) {
-            revert("Failed to mint non-fungible token");
-        }
-
-        emit MintedToken(serial);
+        return metadataBytes;
     }
 
 }
