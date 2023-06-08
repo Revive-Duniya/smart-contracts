@@ -1,9 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/Base64.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 
-contract Subscriptions is ERC721, Ownable {
+contract Subscriptions is Ownable, ERC721URIStorage {
     struct User {
         address userAddr;
         uint256 renewTimestamp;
@@ -25,6 +28,7 @@ contract Subscriptions is ERC721, Ownable {
             //mint nft
             tokenIdNumber = tokenIdNumber + 1;
             _safeMint(msg.sender, tokenIdNumber);
+            _setTokenURI(tokenIdNumber,generateMetadata(tokenIdNumber, 1, "subscription", "ipfs://bafyreie3ichmqul4xa7e6xcy34tylbuq2vf3gnjf7c55trg3b6xyjr4bku/metadata.json"));
             //renew subscriptions
             userData[msg.sender] = User(
                 msg.sender,
@@ -45,6 +49,34 @@ contract Subscriptions is ERC721, Ownable {
         }
     }
 
+    function generateMetadata(uint256 tokenId,uint256 assetId, string memory name,string memory ipfsimage)
+        private
+        pure
+        returns (string memory)
+    {
+        string memory json = Base64.encode(
+            bytes(
+                string(
+                    abi.encodePacked(
+                        '{"name": "',
+                        name,
+                        Strings.toString(tokenId),
+                        '","assetid":"',Strings.toString(assetId),'", "description": "suscription of revive duniya game", "image": "data:image/svg+xml;base64,',
+                        ipfsimage,
+                        '"}'
+                    )
+                )
+            )
+        );
+
+        string memory metadata = string(
+            json
+        );
+
+        return metadata;
+    }
+
+
     function isUserSuscribed(address _user) public view returns(bool){
         return userData[_user].renewTimestamp > block.timestamp;
     }
@@ -52,6 +84,8 @@ contract Subscriptions is ERC721, Ownable {
     function setSubscriptionAmount(uint _amount)public onlyOwner{
         suscriptionAmount = _amount;
     }
+
+  
 
     
 }
