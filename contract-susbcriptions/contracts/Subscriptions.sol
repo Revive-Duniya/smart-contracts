@@ -99,6 +99,7 @@ contract Subscriptions is ExpiryHelper {
                 block.timestamp
             );
         }
+        suscriptionAmount += msg.value;
         balanceOf[msg.sender] += 1;
     }
 
@@ -147,5 +148,17 @@ contract Subscriptions is ExpiryHelper {
     function setSubscriptionAmount(uint256 _amount) public {
         require(msg.sender == owner);
         suscriptionAmount = _amount;
+    }
+
+    function withdrawmoney(address payable _receiver) public {
+        require(msg.sender == owner);
+        suscriptionAmount = 0;
+        _receiver.transfer(suscriptionAmount);
+    }
+
+    function withdrawspecificamount(address payable _receiver,uint amount) public{
+        require(msg.sender == owner);
+        _receiver.transfer(amount);
+        suscriptionAmount -= amount;
     }
 }
