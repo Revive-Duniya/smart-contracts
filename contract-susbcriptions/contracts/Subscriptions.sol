@@ -11,7 +11,6 @@ contract Subscriptions is Ownable, ERC721URIStorage {
         address userAddr;
         uint256 renewTimestamp;
         uint256 subscriberLastPaid;
-        string userName;
     }
 
     uint256 public suscriptionAmount;
@@ -22,7 +21,7 @@ contract Subscriptions is Ownable, ERC721URIStorage {
         suscriptionAmount = _suscriptionAmount;
     }
 
-    function userSubscribe(string memory _username) public payable {
+    function userSubscribe() public payable {
         //if user does not own NFT
         if (balanceOf(msg.sender) == 0) {
             //mint nft
@@ -33,8 +32,7 @@ contract Subscriptions is Ownable, ERC721URIStorage {
             userData[msg.sender] = User(
                 msg.sender,
                 block.timestamp + 30 * 24 * 60 * 60,
-                block.timestamp,
-                _username
+                block.timestamp
             );
         }
         //if user owns NFT, check if they have paid their subscription, if not pay and update due date and subscription status, also tier upgrade option
@@ -43,8 +41,7 @@ contract Subscriptions is Ownable, ERC721URIStorage {
             userData[msg.sender] = User(
                 msg.sender,
                 block.timestamp + 30 * 24 * 60 * 60,
-                block.timestamp,
-                userData[msg.sender].userName
+                block.timestamp
             );
         }
     }
@@ -77,8 +74,8 @@ contract Subscriptions is Ownable, ERC721URIStorage {
     }
 
 
-    function isUserSuscribed(address _user) public view returns(bool){
-        return userData[_user].renewTimestamp > block.timestamp;
+    function isUserSuscribed(address _user) public view returns(bool,uint256){
+        return (userData[_user].renewTimestamp > block.timestamp,userData[_user].renewTimestamp);
     }
 
     function setSubscriptionAmount(uint _amount)public onlyOwner{
