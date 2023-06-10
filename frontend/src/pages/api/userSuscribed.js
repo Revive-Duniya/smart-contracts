@@ -8,7 +8,7 @@ const handler = async (req, res) => {
         const hedera_address = req.query.hedera_address;
         const address = req.query.address;
         if(hedera_address.length === 0 && address.length === 0){
-            res.status(200).json({status:'fail', error:err, data: null,message:'please provide an user address'});
+            res.status(200).json({status:'fail', error:'please provide an user address', data: null,message:'please provide an user address'});
         }
         
         //generate signer from private key
