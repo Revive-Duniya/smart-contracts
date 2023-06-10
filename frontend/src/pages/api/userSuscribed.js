@@ -7,10 +7,9 @@ const handler = async (req, res) => {
         //get user address        
         const hedera_address = req.query.hedera_address;
         const address = req.query.address;
-        if(hedera_address.length === 0 && address.length === 0){
+        if(hedera_address?.length === 0 && address?.length === 0){
             res.status(200).json({status:'fail', error:'please provide an user address', data: null,message:'please provide an user address'});
         }
-        
         //generate signer from private key
         const rpc_url = process.env.NETWORK_RPC;
         const private_key = process.env.MY_PRIVATE_KEY_2;
@@ -27,7 +26,6 @@ const handler = async (req, res) => {
         
         //fetch suscription renew date
         const renew_suscription_date = parseInt(user_data.renewTimestamp);
-    
         res.status(200).json({status:'succes', error:null, data: { isUsersuscribed:user_renew, renew_suscription_date },message:''});
       }catch(err){
         res.status(200).json({status:'fail', error:err, data: null,message:'internal error, please try again later or try with a new address'});
