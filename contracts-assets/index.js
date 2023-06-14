@@ -58,10 +58,10 @@ const main = async () => {
 		.setFunction(
 			"createNft",
 			new ContractFunctionParameters()
-				.addString("Fall Collection") // NFT name
-				.addString("LEAF") // NFT symbol
+				.addString("Revive Duniya") // NFT name
+				.addString("DUN") // NFT symbol
 				.addString("Just a memo") // NFT memo
-				.addInt64(250) // NFT max supply
+				.addInt64(1000000000) // NFT max supply
 				.addInt64(7000000) // Expiration: Needs to be between 6999999 and 8000001
 		);
 	const createTokenTx = await createToken.execute(client);
@@ -70,41 +70,42 @@ const main = async () => {
 	const tokenId = AccountId.fromSolidityAddress(tokenIdSolidityAddr);
 
 	console.log(`Token created with ID: ${tokenId} \n`);
-
-	// // Mint NFT
-	// const mintToken = new ContractExecuteTransaction()
+	//--------------
+	//ASSET CREATION TEST
+	//--------------
+	// // Create NFT from precompile
+	// const createdAsset = new ContractExecuteTransaction()
 	// 	.setContractId(contractId)
-	// 	.setGas(4000000)
-	// 	.setMaxTransactionFee(new Hbar(20)) //Use when HBAR is under 10 cents
+	// 	.setGas(4000000) // Increase if revert
 	// 	.setFunction(
-	// 		"mintNft",
+	// 		"addAsset",
 	// 		new ContractFunctionParameters()
-	// 			.addAddress(tokenIdSolidityAddr) // Token address
-	// 			.addBytesArray([Buffer.from(metadata)]) // Metadata
+	// 			.addString("character 1") // asset name
+	// 			.addString("ipfs://testdfwsssssssswefewfrwfdfwtwwrewjkowjkedjk") // ipfs uri
+	// 			.addUint256(10) // Asset Price
 	// 	);
-	// const mintTokenTx = await mintToken.execute(client);
-	// const mintTokenRx = await mintTokenTx.getRecord(client);
-	// const serial = mintTokenRx.contractFunctionResult.getInt64(0);
-
-	// console.log(`Minted NFT with serial: ${serial} \n`);
-
-	// // Transfer NFT to Alice
-	// const transferToken = await new ContractExecuteTransaction()
+	//--------------
+	//ASSET MINTING TEST
+	//--------------
+	// const createdAssetTx = await createdAsset.execute(client);
+	// const createdAssetRx = await createdAssetTx.getRecord(client);
+	// console.log('Asset created correctly');
+	// const mintedasset = new ContractExecuteTransaction()
 	// 	.setContractId(contractId)
-	// 	.setGas(4000000)
+	// 	.setGas(4000000) // Increase if revert
+	// 	.setPayableAmount(11) // Increase if revert
 	// 	.setFunction(
-	// 		"transferNft",
+	// 		"mintAsset",
 	// 		new ContractFunctionParameters()
-	// 			.addAddress(tokenIdSolidityAddr) // Token address
-	// 			.addAddress(aliceId.toSolidityAddress()) // Token receiver (Alice)
-	// 			.addInt64(serial)
-	// 	) // NFT serial number
-	// 	.freezeWith(client) // freezing using client
-	// 	.sign(aliceKey); // Sign transaction with Alice
-	// const transferTokenTx = await transferToken.execute(client);
-	// const transferTokenRx = await transferTokenTx.getReceipt(client);
+	// 			.addUint256(1) // Asset ID
+	// );
+	// const mintedassetTx = await mintedasset.execute(client);
+	// const mintedassetRx = await mintedassetTx.getRecord(client);
+	// console.log('Asset bought correctly at address ' + process.env.ACCOUNT_ID);
 
-	// console.log(`Transfer status: ${transferTokenRx.status} \n`);
+	
+
+	
 };
 
 main();
