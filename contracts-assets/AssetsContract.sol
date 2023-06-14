@@ -14,7 +14,7 @@ import "./KeyHelper.sol";
 import "./Base64.sol";
 import "./Strings.sol";
 
-contract Assets is ExpiryHelper {
+contract Assets is ExpiryHelper, KeyHelper, HederaTokenService {
     struct Asset {
         string name;
         string ipfsimageUri;
@@ -50,7 +50,8 @@ contract Assets is ExpiryHelper {
             int64 maxSupply,  
             int64 autoRenewPeriod
         ) external payable returns (address){
-        require(NftCollectionAddress != address(0));
+        require(NftCollectionAddress == address(0));
+
         IHederaTokenService.TokenKey[] memory keys = new IHederaTokenService.TokenKey[](1);
         // Set this contract as supply for the token
         keys[0] = getSingleKey(KeyType.SUPPLY, KeyValueType.CONTRACT_ID, address(this));
