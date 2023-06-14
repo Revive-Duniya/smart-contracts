@@ -1,3 +1,5 @@
+"use client";
+
 import { HashConnect } from 'hashconnect';
 import toast from 'react-hot-toast';
 
