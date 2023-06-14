@@ -125,7 +125,8 @@ const main = async () => {
 	const mintedassetTx = await mintedasset.execute(client);
 	const mintedassetRx = await mintedassetTx.getRecord(client);
 	console.log('Asset bought correctly at address ' + process.env.ACCOUNT_ID);
-
+	const json = JSON.stringify({ NFTTokenCollectionId:`${tokenId.shard.low}.${tokenId.shard.high}.${tokenId.num.low}`,EVM_NFTidId:"ask developer",deployed_contract_address:`${contractId.shard.low}.${contractId.shard.high}.${contractId.num.low}`,deployed_contract_address_evm:"ask developer",deployerAddress:process.env.MY_ACCOUNT_ID });
+    fs.writeFile('./deployed_data/deployed_data.json', json, 'utf8', () => { });
 
 
 
