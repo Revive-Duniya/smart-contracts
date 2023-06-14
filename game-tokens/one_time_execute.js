@@ -10,7 +10,8 @@ const {
     Hbar,
     PublicKey,
     TokenCreateTransaction,
-    CustomFractionalFee
+    CustomFractionalFee,
+    TokenSupplyType
 } = require("@hashgraph/sdk");
 
 // Setup your .env path
@@ -32,9 +33,10 @@ const main = async () => {
     const DUNtransaction = await new TokenCreateTransaction()
         .setTokenName("Duniya Token")
         .setTokenSymbol("DUN")
+        .setSupplyType(TokenSupplyType.Finite)
         .setTreasuryAccountId(process.env.ACCOUNT_ID)        
-        //NOT WORKING IN JAVASCRIPT.setMaxSupply(30000000000)//300 MILLION + 00 (2 decimals)
-        .setInitialSupply(1500000000)//150 MILLION + 00 (2 decimals)
+        .setMaxSupply(30000000000)//300 MILLION + 00 (2 decimals)
+        .setInitialSupply(10000000000)//150 MILLION + 00 (2 decimals)
         .setDecimals(2)
         // .setCustomFees(new CustomFractionalFee() //1% fees
         //     .setNumerator(1) // The numerator of the fraction

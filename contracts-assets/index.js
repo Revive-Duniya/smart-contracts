@@ -8,6 +8,7 @@ const {
 	ContractFunctionParameters,
 	AccountCreateTransaction,
 	Hbar,
+	TokenAssociateTransaction
 } = require("@hashgraph/sdk");
 
 // Setup your .env path
@@ -71,41 +72,63 @@ const main = async () => {
 
 	console.log(`Token created with ID: ${tokenId} \n`);
 	//--------------
+	//ASSOCIATE TOKEN TO THE ACCOUNT
+	//--------------
+	//Associate a token to an account and freeze the unsigned transaction for signing
+	const transaction = await new TokenAssociateTransaction()
+		.setAccountId(process.env.ACCOUNT_ID)
+		.setTokenIds([`${tokenId.shard.low}.${tokenId.shard.high}.${tokenId.num.low}`])
+		.freezeWith(client);
+
+	//Sign with the private key of the account that is being associated to a token 
+	const signTx = await transaction.sign(operatorKey);
+
+	//Submit the transaction to a Hedera network    
+	const txResponse = await signTx.execute(client);
+
+	//Request the receipt of the transaction
+	const receipt = await txResponse.getReceipt(client);
+
+	//Get the transaction consensus status
+	const transactionStatus = receipt.status;
+
+	console.log("The transaction consensus status " + transactionStatus.toString());
+	//--------------
 	//ASSET CREATION TEST
 	//--------------
-	// // Create NFT from precompile
-	// const createdAsset = new ContractExecuteTransaction()
-	// 	.setContractId(contractId)
-	// 	.setGas(4000000) // Increase if revert
-	// 	.setFunction(
-	// 		"addAsset",
-	// 		new ContractFunctionParameters()
-	// 			.addString("character 1") // asset name
-	// 			.addString("ipfs://testdfwsssssssswefewfrwfdfwtwwrewjkowjkedjk") // ipfs uri
-	// 			.addUint256(10) // Asset Price
-	// 	);
+	// Create NFT from precompile
+	const createdAsset = new ContractExecuteTransaction()
+		.setContractId(contractId)
+		.setGas(4000000) // Increase if revert
+		.setFunction(
+			"addAsset",
+			new ContractFunctionParameters()
+				.addString("character 1") // asset name
+				.addString("ipfs://testdfwsssssssswefewfrwfdfwtwwrewjkowjkedjk") // ipfs uri
+				.addUint256(10) // Asset Price
+		);
 	//--------------
 	//ASSET MINTING TEST
 	//--------------
-	// const createdAssetTx = await createdAsset.execute(client);
-	// const createdAssetRx = await createdAssetTx.getRecord(client);
-	// console.log('Asset created correctly');
-	// const mintedasset = new ContractExecuteTransaction()
-	// 	.setContractId(contractId)
-	// 	.setGas(4000000) // Increase if revert
-	// 	.setPayableAmount(11) // Increase if revert
-	// 	.setFunction(
-	// 		"mintAsset",
-	// 		new ContractFunctionParameters()
-	// 			.addUint256(1) // Asset ID
-	// );
-	// const mintedassetTx = await mintedasset.execute(client);
-	// const mintedassetRx = await mintedassetTx.getRecord(client);
-	// console.log('Asset bought correctly at address ' + process.env.ACCOUNT_ID);
+	const createdAssetTx = await createdAsset.execute(client);
+	const createdAssetRx = await createdAssetTx.getRecord(client);
+	console.log('Asset created correctly');
+	const mintedasset = new ContractExecuteTransaction()
+		.setContractId(contractId)
+		.setGas(4000000) // Increase if revert
+		.setPayableAmount(20) // Increase if revert
+		.setFunction(
+			"mintAsset",
+			new ContractFunctionParameters()
+				.addUint256(1) // Asset ID
+		);
+	const mintedassetTx = await mintedasset.execute(client);
+	const mintedassetRx = await mintedassetTx.getRecord(client);
+	console.log('Asset bought correctly at address ' + process.env.ACCOUNT_ID);
 
-	
 
-	
+
+
 };
 
 main();

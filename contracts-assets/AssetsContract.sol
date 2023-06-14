@@ -129,6 +129,12 @@ contract Assets is ExpiryHelper, KeyHelper, HederaTokenService {
         if (response != HederaResponseCodes.SUCCESS) {
             revert("Failed to mint non-fungible token");
         }
+
+        int responseT = HederaTokenService.transferNFT(NftCollectionAddress, address(this), msg.sender, serial[0]);
+
+        if(responseT != HederaResponseCodes.SUCCESS){
+            revert("Failed to transfer non-fungible token");
+        }
         amount += msg.value;
     }
 
