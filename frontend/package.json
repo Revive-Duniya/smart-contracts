@@ -23,6 +23,6 @@
     "utf-8-validate": "^5.0.10"
   },
   "devDependencies": {
-    "hashconnect": "^0.2.4"
+    "hashconnect": "^0.2.1"
   }
 }
