@@ -4,6 +4,8 @@ pragma solidity ^0.8.9;
 // import "https://github.com/hashgraph/hedera-smart-contracts/blob/v0.2.0/contracts/hts-precompile/IHederaTokenService.sol";
 // import "https://github.com/hashgraph/hedera-smart-contracts/blob/v0.2.0/contracts/hts-precompile/HederaTokenService.sol";
 // import "https://github.com/hashgraph/hedera-smart-contracts/blob/v0.2.0/contracts/hts-precompile/ExpiryHelper.sol";
+// import "@openzeppelin/contracts/utils/Base64.sol";
+// import "@openzeppelin/contracts/utils/Strings.sol";
 import "./HederaResponseCodes.sol";
 import "./IHederaTokenService.sol";
 import "./HederaTokenService.sol";
@@ -12,7 +14,7 @@ import "./KeyHelper.sol";
 import "./Base64.sol";
 import "./Strings.sol";
 
-contract Assets is ExpiryHelper, KeyHelper, HederaTokenService {
+contract Assets is ExpiryHelper {
     struct Asset {
         string name;
         string ipfsimageUri;
@@ -28,6 +30,7 @@ contract Assets is ExpiryHelper, KeyHelper, HederaTokenService {
     Asset[] assets;
     uint public assetsAmount;
     uint public tokenAmount;
+    uint public amount;
     address public NftCollectionAddress;
     address public owner;
 
@@ -72,7 +75,11 @@ contract Assets is ExpiryHelper, KeyHelper, HederaTokenService {
         return createdToken;
     }
 
-    
+    function withdraw() public {
+        require(owner == msg.sender);
+        payable(msg.sender).transfer(amount);
+        amount = 0;
+    }
 
     function addAsset(string memory name, string memory ipfsimage,uint price) public {
         require(owner == msg.sender);
@@ -83,7 +90,7 @@ contract Assets is ExpiryHelper, KeyHelper, HederaTokenService {
         assets.push(Asset(name,ipfsimage,false,assetsAmount,price));
     }
 
-    function updateAssetPrice(uint256 _price) {
+    function updateAssetPrice(uint256 _assetId,uint256 _price) public {
         require(owner == msg.sender);
         assetsData[_assetId].price = _price;
         assets[_assetId -1].price = _price;
@@ -121,6 +128,7 @@ contract Assets is ExpiryHelper, KeyHelper, HederaTokenService {
         if (response != HederaResponseCodes.SUCCESS) {
             revert("Failed to mint non-fungible token");
         }
+        amount += msg.value;
     }
 
     function generateMetadata(uint256 tokenId,uint256 assetId, string memory name,string memory ipfsimage)
@@ -153,80 +161,4 @@ contract Assets is ExpiryHelper, KeyHelper, HederaTokenService {
         return metadataBytes;
     }
 
-    
-
-
-
-
-    // function createNft(
-    //         string memory name,
-    //         string memory symbol,
-    //         string memory memo,
-    //         int64 maxSupply,
-    //         int64 autoRenewPeriod
-    //     ) external payable returns (address){
-
-    //     IHederaTokenService.TokenKey[] memory keys = new IHederaTokenService.TokenKey[](1);
-    //     // Set this contract as supply for the token
-    //     keys[0] = getSingleKey(KeyType.SUPPLY, KeyValueType.CONTRACT_ID, address(this));
-
-    //     IHederaTokenService.HederaToken memory token;
-    //     token.name = name;
-    //     token.symbol = symbol;
-    //     token.memo = memo;
-    //     token.treasury = address(this);
-    //     token.tokenSupplyType = true; // set supply to FINITE
-    //     token.maxSupply = maxSupply;
-    //     token.tokenKeys = keys;
-    //     token.freezeDefault = false;
-    //     token.expiry = createAutoRenewExpiry(address(this), 7000000);
-
-    //     (int responseCode, address createdToken) = HederaTokenService.createNonFungibleToken(token);
-
-    //     if(responseCode != HederaResponseCodes.SUCCESS){
-    //         revert("Failed to create non-fungible token");
-    //     }
-    //     return createdToken;
-    // }
-
-    // function mintNft(
-    //     address token,
-    //     bytes[] memory metadata
-    // ) external returns(int64){
-
-    //     (int response, , int64[] memory serial) = HederaTokenService.mintToken(token, 0, metadata);
-
-    //     if(response != HederaResponseCodes.SUCCESS){
-    //         revert("Failed to mint non-fungible token");
-    //     }
-
-    //     return serial[0];
-    // }
-
-    // function transferNft(
-    //     address token,
-    //     address receiver,
-    //     int64 serial
-    // ) external returns(int){
-
-    //     HederaTokenService.associateToken(receiver, token);
-    //     int response = HederaTokenService.transferNFT(token, address(this), receiver, serial);
-
-    //     if(response != HederaResponseCodes.SUCCESS){
-    //         revert("Failed to transfer non-fungible token");
-    //     }
-
-    //     return response;
-    // }
-    // uint256 public tokenIdNumber;
-    // mapping(address => uint256[]) public userOwnedNFTs;
-
-    // function myNft()public view returns(uint256[] memory){
-    //     uint256[] memory array = new uint256[](tokenIdNumber);
-    //     uint256 amountNFT = balanceOf(msg.sender);
-    //     for(uint i=0;i<amountNFT;i++){
-    //         array[i]=tokenOfOwnerByIndex(msg.sender,i);
-    //     }
-    //     return array;
-    // }
 }
