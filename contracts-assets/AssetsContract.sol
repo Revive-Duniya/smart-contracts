@@ -17,7 +17,7 @@ import "./Strings.sol";
 contract Assets is ExpiryHelper, KeyHelper, HederaTokenService {
     struct Asset {
         string name;
-        string ipfsimageUri;
+        string ipfs;
         bool hidden;
         uint assetId;
         uint price;
@@ -82,13 +82,13 @@ contract Assets is ExpiryHelper, KeyHelper, HederaTokenService {
         amount = 0;
     }
 
-    function addAsset(string memory name, string memory ipfsimage,uint price) public {
+    function addAsset(string memory name, string memory ipfs,uint price) public {
         require(owner == msg.sender);
         require(assetsId[name] == 0,"Asset created");
         assetsAmount += 1;
         assetsId[name] = assetsAmount;
-        assetsData[assetsAmount] = Asset(name,ipfsimage,false,assetsAmount,price);
-        assets.push(Asset(name,ipfsimage,false,assetsAmount,price));
+        assetsData[assetsAmount] = Asset(name,ipfs,false,assetsAmount,price);
+        assets.push(Asset(name,ipfs,false,assetsAmount,price));
     }
 
     function updateAssetPrice(uint256 _assetId,uint256 _price) public {
@@ -116,11 +116,11 @@ contract Assets is ExpiryHelper, KeyHelper, HederaTokenService {
 
     function mintAsset(uint256 _assetId)public payable{
         //require asset bought
-        require(assetsData[_assetId].price >= msg.value);
+        //require(assetsData[_assetId].price >= msg.value);
         //increase tokenAmount
         tokenAmount += 1;
         //create metadata 
-        bytes[] memory metadata = generateMetadata(tokenAmount,_assetId,assetsData[_assetId].name,assetsData[_assetId].ipfsimageUri);
+        bytes[] memory metadata = generateMetadata(tokenAmount,assetsData[_assetId].ipfs);
 
 
         (int256 response, , int64[] memory serial) = HederaTokenService
@@ -132,7 +132,7 @@ contract Assets is ExpiryHelper, KeyHelper, HederaTokenService {
         amount += msg.value;
     }
 
-    function generateMetadata(uint256 tokenId,uint256 assetId, string memory name,string memory ipfsimage)
+    function generateMetadata(uint256 tokenId,string memory ipfs)
         private
         pure
         returns (bytes[] memory)
@@ -141,11 +141,10 @@ contract Assets is ExpiryHelper, KeyHelper, HederaTokenService {
             bytes(
                 string(
                     abi.encodePacked(
-                        '{"name": "',
-                        name,
+                        '{"id": "',
                         Strings.toString(tokenId),
-                        '","assetid":"',Strings.toString(assetId),'", "description": "An in-game monster", "image": "data:image/svg+xml;base64,',
-                        ipfsimage,
+                        '", "metadata":',
+                        ipfs,
                         '"}'
                     )
                 )
@@ -153,7 +152,7 @@ contract Assets is ExpiryHelper, KeyHelper, HederaTokenService {
         );
 
         string memory metadata = string(
-            abi.encodePacked("data:application/json;base64,", json)
+            abi.encodePacked(json)
         );
 
         bytes[] memory metadataBytes = new bytes[](1);
