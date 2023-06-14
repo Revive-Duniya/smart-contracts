@@ -35,10 +35,10 @@ const Hero = () => {
 
     return (
         <>
-            <div className="w-[90%] h-[80vh] between">
+            <div className="w-[90%] py-20 between">
                 <div className="w-[50%] flex gap-4 flex-col">
                     <h1 className="text-[3.5rem] text-white oxanium uppercase font-bold leading-[60px]">
-                        <span className="text-lightPurple">Revive Duniya: </span>Unleash the Power of a Reborn World!
+                        <span className="text-yellow">Revive Duniya: </span>Unleash the Power of a Reborn World!
                     </h1>
                     <p className="paragraph text-md lato font-light leading-[25px] -mt-3">
                         Join these characters in their fight for survival and quest to build a new, and more sustainable world where man and his environment are safer, healthier and happier.
@@ -54,7 +54,7 @@ const Hero = () => {
                         <CustomButton
                             padding="1rem 2rem"
                             textColor="#FFF"
-                            borderColor="1px solid #AD1AAF"
+                            borderColor="1px solid #ffffff"
                             backgroundColor="transparent"
                         >
                             Connect Wallet

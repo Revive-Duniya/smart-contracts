@@ -16,9 +16,8 @@ module.exports = {
       xxxl: '5rem'
     },
     colors: {
-      primary: "#1E1629",
-      lightPurple: "#F81DFB",
-      button: "#AD1AAF",
+      primary: "#460b3e",
+      yellow: "#fcb70c",
       white: "#FFFFFF",
       black: '#000000',
       error: '#DA0060',
