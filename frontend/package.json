@@ -1,9 +1,12 @@
 {
+  "homepage": "https://codewithmide.github.io/revive-duniya/frontend",
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -23,6 +26,7 @@
     "utf-8-validate": "^5.0.10"
   },
   "devDependencies": {
+    "gh-pages": "^5.0.0",
     "hashconnect": "^0.2.1"
   }
 }
