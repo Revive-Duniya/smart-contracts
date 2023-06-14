@@ -1,13 +1,47 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { HashConnect } from "hashconnect";
 import CustomButton from "./common/button";
 import UserProfile from '/public/images/UserProfile.png';
 import Logo from '/public/images/logo.png';
 
 const NavBar = () => {
+    const [hashconnect, setHashconnect] = useState(null);
+
+    const appMetadata = {
+        name: "Revive Duniya",
+        description: "A web3 game",
+        url: "https://revive-duniya.vercel.app/",
+        icon: "https://github.com/codewithmide/revive-duniya/blob/main/frontend/src/app/favicon.ico",
+    };
+      
+    const handleConnectWallet = async () => {
+        if (!hashconnect) {
+          const newHashConnect = new HashConnect();
+          setHashconnect(newHashConnect);
+      
+          // Register events if needed
+          newHashConnect.pairingEvent.once((pairingData) => {
+            // Handle pairing event
+          });
+      
+          // Call init function to initialize and retrieve data
+          const initData = await newHashConnect.init(appMetadata, "testnet", false);
+          // Do something with the initData, such as displaying the pairing code
+      
+          // Connect to local wallet (HashPack)
+          newHashConnect.connectToLocalWallet();
+        } else {
+          // If hashconnect already exists, you can use it directly
+          hashconnect.connectToLocalWallet();
+        }
+      };
+      
+
+      
     return (
         <div className="py-3 w-[90%] between">
             <div>
@@ -27,6 +61,7 @@ const NavBar = () => {
                     padding=".6rem 1.7rem"
                     backgroundColor="#AD1AAF"
                     textColor="#FFF"
+                    onClick={handleConnectWallet}
                     >
                         Connect wallet
                     </CustomButton>

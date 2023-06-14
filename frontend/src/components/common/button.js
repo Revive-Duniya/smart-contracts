@@ -14,7 +14,7 @@ const CustomButton = ({ padding, backgroundColor, textColor, borderColor, childr
   return (
     <button
       style={buttonStyle}
-      className='center rounded-md text-[.7rem] focus:outline-none capitalize hover:scale-95 transition duration-300 oxanium'
+      className='center rounded-md text-[.9rem] focus:outline-none capitalize hover:scale-95 transition duration-300 oxanium'
       onClick={onClick}
     >
       {children}
