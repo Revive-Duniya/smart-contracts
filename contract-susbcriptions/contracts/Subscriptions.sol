@@ -37,6 +37,15 @@ contract Subscriptions is ExpiryHelper, KeyHelper, HederaTokenService {
 
     function userSubscribe() public payable {
         //receive tokens
+        (int responseCode, uint256 amount) = HederaTokenService.allowance(
+            tokenaddress,
+            msg.sender,
+            address(this)
+        );
+        if (responseCode != HederaResponseCodes.SUCCESS) {
+            revert("Allowance Failed");
+        }
+        //receive tokens
         int response = HederaTokenService.transferToken(
             tokenaddress,
             msg.sender,
