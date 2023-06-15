@@ -7,7 +7,7 @@ export default function RootLayout({ children }) {
   return (
     <>
       <html lang="en">
-        <body suppressHydrationWarning={true} className='overflow-x-hidden'>
+        <body suppressHydrationWarning={true} className="overflow-x-hidden">
           <Toaster position="top-center" reverseOrder={false} />
           {children}
         </body>

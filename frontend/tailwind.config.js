@@ -25,6 +25,7 @@ module.exports = {
     extend: {
       backgroundImage: {
         'gradient': 'linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%)',
+        'walletGradient': 'linear-gradient(147.75deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)',
       },
       backdropBlur: {
         '20': '20.8px',

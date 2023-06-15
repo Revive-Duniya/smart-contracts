@@ -2,12 +2,12 @@
 
 import Homepage from '@/pages/home/page';
 import React from 'react';
-import { ToastContainer } from 'react-hot-toast';
+import Image from 'next/image';
 
 export default function Home() {
   return (
     <>
-        <Homepage />
+      <Homepage />
     </>
   )
 }

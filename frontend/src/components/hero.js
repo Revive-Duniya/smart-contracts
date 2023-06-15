@@ -46,15 +46,15 @@ const Hero = () => {
                     <div className="flex gap-6 z-20 mt-6">
                         <CustomButton 
                             padding="1rem 2rem"
-                            backgroundColor="#AD1AAF"
-                            textColor="#FFF"
+                            backgroundColor="#fcb70c"
+                            textColor="#000000"
                         >
                             Explore NFTs
                         </CustomButton>
                         <CustomButton
                             padding="1rem 2rem"
-                            textColor="#FFF"
-                            borderColor="1px solid #ffffff"
+                            textColor="#fcb70c"
+                            borderColor="1px solid #fcb70c"
                             backgroundColor="transparent"
                         >
                             Connect Wallet
@@ -95,7 +95,7 @@ const Hero = () => {
                 </div>
             </div>
             <div className="w-full -mt-[12rem] bottom-0">
-                <Image src={MilkyWay} alt="Milkyway"/>
+                <Image src={MilkyWay} alt="Milkyway" priority/>
             </div>
         </>
     );
