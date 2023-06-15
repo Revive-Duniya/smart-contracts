@@ -1,12 +1,19 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Base64.sol";
-import "@openzeppelin/contracts/utils/Strings.sol";
-
-contract Subscriptions is Ownable {
+// import "https://github.com/hashgraph/hedera-smart-contracts/blob/v0.2.0/contracts/hts-precompile/HederaResponseCodes.sol";
+// import "https://github.com/hashgraph/hedera-smart-contracts/blob/v0.2.0/contracts/hts-precompile/IHederaTokenService.sol";
+// import "https://github.com/hashgraph/hedera-smart-contracts/blob/v0.2.0/contracts/hts-precompile/HederaTokenService.sol";
+// import "https://github.com/hashgraph/hedera-smart-contracts/blob/v0.2.0/contracts/hts-precompile/ExpiryHelper.sol";
+// import "@openzeppelin/contracts/utils/Base64.sol";
+// import "@openzeppelin/contracts/utils/Strings.sol";
+import "./HederaResponseCodes.sol";
+import "./IHederaTokenService.sol";
+import "./HederaTokenService.sol";
+import "./ExpiryHelper.sol";
+import "./KeyHelper.sol";
+import "./Base64.sol";
+import "./Strings.sol";
+contract Subscriptions is ExpiryHelper, KeyHelper, HederaTokenService {
     event subscriptions(address suscribedAddress,uint monthsSuscribed,uint totalUsers);
 
     struct User {
@@ -20,13 +27,35 @@ contract Subscriptions is Ownable {
     uint256 public tokenIdNumber;
     uint256 public amount;
     mapping(address => User) public userData;
+    address public tokenaddress;
 
-    constructor(uint256 _suscriptionAmount) {
+    constructor(uint256 _suscriptionAmount,address _tokenaddress) {
+        HederaTokenService.associateToken(address(this),_tokenaddress);
         suscriptionAmount = _suscriptionAmount;
+        tokenaddress = _tokenaddress;
     }
 
     function userSubscribe() public payable {
-        require(msg.value >= suscriptionAmount);
+        //receive tokens
+        (int responseCode, uint256 amount) = HederaTokenService.allowance(
+            tokenaddress,
+            msg.sender,
+            address(this)
+        );
+        if (responseCode != HederaResponseCodes.SUCCESS) {
+            revert("Allowance Failed");
+        }
+        //receive tokens
+        int response = HederaTokenService.transferToken(
+            tokenaddress,
+            msg.sender,
+            address(this),
+            int64(int(suscriptionAmount))
+        );
+        if (response != HederaResponseCodes.SUCCESS) {
+            revert("Transfer Failed");
+        }
+        
         //if user does not own NFT
         //increase amount subscriptions
         if(balanceOf[msg.sender]==0){
@@ -77,20 +106,37 @@ contract Subscriptions is Ownable {
         return userData[_user].renewTimestamp > block.timestamp;
     }
 
-    function setSubscriptionAmount(uint256 _amount) public onlyOwner {
+    function setSubscriptionAmount(uint256 _amount) public {
         suscriptionAmount = _amount;
     }
 
-    function withdrawmoney(address payable _receiver) public onlyOwner {
-        suscriptionAmount = 0;
-        _receiver.transfer(suscriptionAmount);
+    function withdrawmoney(address payable _receiver) public {
+        //send tokens
+        int response = HederaTokenService.transferToken(
+            tokenaddress,
+            address(this),
+            _receiver,
+            int64(int(amount))
+        );
+        if (response != HederaResponseCodes.SUCCESS) {
+            revert("Transfer Failed");
+        }
+        amount = 0;
     }
 
     function withdrawspecificamount(address payable _receiver, uint256 _amount)
         public
-        onlyOwner
     {
-        _receiver.transfer(amount);
+        //send tokens
+        int response = HederaTokenService.transferToken(
+            tokenaddress,
+            address(this),
+            _receiver,
+            int64(int(_amount))
+        );
+        if (response != HederaResponseCodes.SUCCESS) {
+            revert("Transfer Failed");
+        }
         amount -= _amount;
     }
 }
