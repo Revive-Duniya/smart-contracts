@@ -23,6 +23,7 @@ contract Subscriptions is ExpiryHelper, KeyHelper, HederaTokenService {
     }
 
     mapping(address => uint256) balanceOf;
+    address public owner;
     uint256 public suscriptionAmount;
     uint256 public tokenIdNumber;
     uint256 public amount;
@@ -33,6 +34,7 @@ contract Subscriptions is ExpiryHelper, KeyHelper, HederaTokenService {
         HederaTokenService.associateToken(address(this),_tokenaddress);
         suscriptionAmount = _suscriptionAmount;
         tokenaddress = _tokenaddress;
+        owner = msg.sender;
     }
 
     function userSubscribe() public payable {
@@ -80,15 +82,18 @@ contract Subscriptions is ExpiryHelper, KeyHelper, HederaTokenService {
         emit subscriptions(msg.sender,balanceOf[msg.sender],tokenIdNumber);
     }
 
+
     function isUserSuscribed(address _user) public view returns (bool) {
         return userData[_user].renewTimestamp > block.timestamp;
     }
 
     function setSubscriptionAmount(uint256 _amount) public {
+        require(owner==msg.sender);
         suscriptionAmount = _amount;
     }
 
     function withdrawmoney(address payable _receiver) public {
+        require(owner==msg.sender);
         //send tokens
         int response = HederaTokenService.transferToken(
             tokenaddress,
@@ -105,6 +110,7 @@ contract Subscriptions is ExpiryHelper, KeyHelper, HederaTokenService {
     function withdrawspecificamount(address payable _receiver, uint256 _amount)
         public
     {
+        require(owner==msg.sender);
         //send tokens
         int response = HederaTokenService.transferToken(
             tokenaddress,
