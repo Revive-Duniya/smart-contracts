@@ -1,9 +1,14 @@
-"use client";
-
 import React from "react";
 import PropTypes from "prop-types";
 
-const CustomButton = ({ padding, backgroundColor, textColor, borderColor, children, onClick }) => {
+const CustomButton = ({
+  padding = "10px 20px",
+  backgroundColor = "#AD1AAF",
+  textColor = "white",
+  borderColor = "none",
+  children,
+  onClick = () => {},
+}) => {
   const buttonStyle = {
     padding: padding,
     backgroundColor: backgroundColor,
@@ -14,8 +19,9 @@ const CustomButton = ({ padding, backgroundColor, textColor, borderColor, childr
   return (
     <button
       style={buttonStyle}
-      className='center rounded-md text-[.9rem] focus:outline-none capitalize hover:scale-95 transition duration-300 oxanium'
+      className="center rounded-md text-[.9rem] focus:outline-none capitalize font-bold hover:scale-95 transition duration-300 oxanium"
       onClick={onClick}
+      id="accountId"
     >
       {children}
     </button>
@@ -31,14 +37,4 @@ CustomButton.propTypes = {
   onClick: PropTypes.func,
 };
 
-CustomButton.defaultProps = {
-  padding: "10px 20px",
-  backgroundColor: "#AD1AAF",
-  textColor: "white",
-  borderColor: "none",
-  onClick: () => {},
-};
-
 export default CustomButton;
-
-

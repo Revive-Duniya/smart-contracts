@@ -29,3 +29,21 @@
 .paragraph {
     color: rgba(255, 255, 255, 0.637);
 }
+
+.gradient {
+    font-size: 1.1rem;
+    background: linear-gradient(90.13deg, #FFFFFF 0%, #fcb70c 99.96%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.walletGradient {
+    background: linear-gradient(147.75deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    backdrop-filter: blur(10px);
+}
+
+.bgWalletGradient {
+    background: linear-gradient(147.75deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+}

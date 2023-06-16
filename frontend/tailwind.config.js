@@ -16,9 +16,8 @@ module.exports = {
       xxxl: '5rem'
     },
     colors: {
-      primary: "#1E1629",
-      lightPurple: "#F81DFB",
-      button: "#AD1AAF",
+      primary: "#460b3e",
+      yellow: "#fcb70c",
       white: "#FFFFFF",
       black: '#000000',
       error: '#DA0060',
@@ -26,6 +25,7 @@ module.exports = {
     extend: {
       backgroundImage: {
         'gradient': 'linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%)',
+        'walletGradient': 'linear-gradient(147.75deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)',
       },
       backdropBlur: {
         '20': '20.8px',
