@@ -36,7 +36,7 @@ const main = async () => {
         .setSupplyType(TokenSupplyType.Finite)
         .setTreasuryAccountId(process.env.ACCOUNT_ID)        
         .setMaxSupply(30000000000)//300 MILLION + 00 (2 decimals)
-        .setInitialSupply(10000000000)//150 MILLION + 00 (2 decimals)
+        .setInitialSupply(7500000000)//150 MILLION + 00 (2 decimals)
         .setDecimals(2)
         // .setCustomFees(new CustomFractionalFee() //1% fees
         //     .setNumerator(1) // The numerator of the fraction
@@ -44,7 +44,6 @@ const main = async () => {
         //     .setFeeCollectorAccountId(process.env.ACCOUNT_ID) // The account collecting the 10% custom fee each time the token is transferred
         // )
         .setFreezeKey(operatorPublicKey)
-        .setWipeKey(operatorPublicKey)
         .setAdminKey(operatorPublicKey)
         .setMaxTransactionFee(new Hbar(30)) //Change the default max transaction fee
         .freezeWith(client);
@@ -69,7 +68,7 @@ const main = async () => {
         .setTokenName("Duniya Green Token")
         .setTokenSymbol("DGR")
         .setTreasuryAccountId(process.env.ACCOUNT_ID)
-        .setInitialSupply(1000000000)//150 MILLION + 00 (2 decimals)
+        .setInitialSupply(3000000000)//30 MILLION + 00 (2 decimals)
         .setDecimals(2)
         // .setCustomFees(new CustomFractionalFee() //1% fees
         //     .setNumerator(1) // The numerator of the fraction
