@@ -37,14 +37,20 @@ contract Subscriptions is ExpiryHelper, KeyHelper, HederaTokenService {
 
     function userSubscribe() public payable {
         //receive tokens
-        (int responseCode, uint256 amount) = HederaTokenService.allowance(
+        //int responseCode = HederaTokenService.approve(
+            //tokenaddress,
+            //address(this),
+            //2000
+        //);
+        //if (responseCode != HederaResponseCodes.SUCCESS) {
+            //revert("Allowance Failed");
+        //}
+        //just check the approved amount
+        HederaTokenService.allowance(
             tokenaddress,
-            msg.sender,
+            msg.sender,            
             address(this)
         );
-        if (responseCode != HederaResponseCodes.SUCCESS) {
-            revert("Allowance Failed");
-        }
         //receive tokens
         int response = HederaTokenService.transferToken(
             tokenaddress,
@@ -72,34 +78,6 @@ contract Subscriptions is ExpiryHelper, KeyHelper, HederaTokenService {
         amount += msg.value;
         balanceOf[msg.sender] += 1;
         emit subscriptions(msg.sender,balanceOf[msg.sender],tokenIdNumber);
-    }
-
-    function generateMetadata(
-        uint256 tokenId,
-        uint256 assetId,
-        string memory name,
-        string memory ipfsimage
-    ) private pure returns (string memory) {
-        string memory json = Base64.encode(
-            bytes(
-                string(
-                    abi.encodePacked(
-                        '{"name": "',
-                        name,
-                        Strings.toString(tokenId),
-                        '","assetid":"',
-                        Strings.toString(assetId),
-                        '", "description": "suscription of revive duniya game", "image": "data:image/svg+xml;base64,',
-                        ipfsimage,
-                        '"}'
-                    )
-                )
-            )
-        );
-
-        string memory metadata = string(json);
-
-        return metadata;
     }
 
     function isUserSuscribed(address _user) public view returns (bool) {
