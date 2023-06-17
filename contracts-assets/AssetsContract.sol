@@ -33,6 +33,7 @@ contract Assets is ExpiryHelper, KeyHelper,HederaTokenService
     uint public assetsAmount;
     uint public tokenAmount;
     mapping(address=>uint)public amount;
+    mapping(address=>bool)public associated;
     address public NftCollectionAddress;
     address public owner;
 
@@ -109,6 +110,12 @@ contract Assets is ExpiryHelper, KeyHelper,HederaTokenService
     function addAsset(string memory name, string memory ipfs,uint price,address _token) public {
         require(owner == msg.sender);
         require(assetsId[name] == 0,"Asset created");
+        if(associated[_token]==false){
+            int responseAssociation = HederaTokenService.associateToken(address(this),_token);
+            if (responseAssociation != HederaResponseCodes.SUCCESS) {
+                revert("Association Failed");
+            }
+        }
         assetsAmount += 1;
         assetsId[name] = assetsAmount;
         assetsData[assetsAmount] = Asset(name,ipfs,false,assetsAmount,price,_token);
