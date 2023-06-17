@@ -45,6 +45,7 @@ const main = async () => {
         // )
         .setFreezeKey(operatorPublicKey)
         .setAdminKey(operatorPublicKey)
+        .setPauseKey(operatorPublicKey) //as this is the governance token , when ecosystem votations, pause the token
         .setMaxTransactionFee(new Hbar(30)) //Change the default max transaction fee
         .freezeWith(client);
 
@@ -76,7 +77,6 @@ const main = async () => {
         //     .setFeeCollectorAccountId(process.env.ACCOUNT_ID) // The account collecting the 10% custom fee each time the token is transferred
         // )
         .setFreezeKey(operatorPublicKey)
-        .setWipeKey(operatorPublicKey)
         .setAdminKey(operatorPublicKey)
         .setMaxTransactionFee(new Hbar(30)) //Change the default max transaction fee
         .freezeWith(client);
@@ -95,7 +95,7 @@ const main = async () => {
 
     console.log(`GRC Token created with ID: ${GRCtokenId} \n`);
 
-    const json = JSON.stringify({ DUNTokenId:DUNtokenId,EVM_DUNTokenId:"ask developer",DGRCTokenId: GRCtokenId, EVM_GRCTokenId: "ask developer",deployerAddress:process.env.MY_ACCOUNT_ID });
+    const json = JSON.stringify({ DUNTokenId:`${DUNtokenId.shard.low}.${DUNtokenId.shard.high}.${DUNtokenId.num.low}`,EVM_DUNTokenId:"ask developer",DGRCTokenId: `${GRCtokenId.shard.low}.${GRCtokenId.shard.high}.${GRCtokenId.num.low}`, EVM_GRCTokenId: "ask developer",deployerAddress:process.env.MY_ACCOUNT_ID });
     fs.writeFile('./deployed_data/deployed_data.json', json, 'utf8', () => { });
 
 };
