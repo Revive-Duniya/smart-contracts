@@ -14,13 +14,15 @@ import "./KeyHelper.sol";
 import "./Base64.sol";
 import "./Strings.sol";
 
-contract Assets is ExpiryHelper, KeyHelper, HederaTokenService {
+contract Assets is ExpiryHelper, KeyHelper,HederaTokenService 
+{
     struct Asset {
         string name;
         string ipfs;
         bool hidden;
         uint assetId;
         uint price;
+        address payingToken;
     }
     event MintedToken(int64[] serialNumbers);
     event Response(int256 response);
@@ -30,7 +32,7 @@ contract Assets is ExpiryHelper, KeyHelper, HederaTokenService {
     Asset[] assets;
     uint public assetsAmount;
     uint public tokenAmount;
-    uint public amount;
+    mapping(address=>uint)public amount;
     address public NftCollectionAddress;
     address public owner;
 
@@ -76,19 +78,41 @@ contract Assets is ExpiryHelper, KeyHelper, HederaTokenService {
         return createdToken;
     }
 
-    function withdraw() public {
+    function withdraw(address _token) public {
         require(owner == msg.sender);
-        payable(msg.sender).transfer(amount);
-        amount = 0;
+        int responseTransfer = HederaTokenService.transferToken(
+            _token,
+            address(this),
+            msg.sender,
+            int64(int(amount[_token]))
+        );
+        if (responseTransfer != HederaResponseCodes.SUCCESS) {
+            revert("Transfer Failed");
+        }
+        amount[ _token] = 0;
     }
 
-    function addAsset(string memory name, string memory ipfs,uint price) public {
+    function smallWithdraw(address _token, uint _amount)public{
+        require(owner == msg.sender);
+        int responseTransfer = HederaTokenService.transferToken(
+            _token,
+            address(this),
+            msg.sender,
+            int64(int(_amount))
+        );
+        if (responseTransfer != HederaResponseCodes.SUCCESS) {
+            revert("Transfer Failed");
+        }
+        amount[ _token] -= _amount;
+    }
+
+    function addAsset(string memory name, string memory ipfs,uint price,address _token) public {
         require(owner == msg.sender);
         require(assetsId[name] == 0,"Asset created");
         assetsAmount += 1;
         assetsId[name] = assetsAmount;
-        assetsData[assetsAmount] = Asset(name,ipfs,false,assetsAmount,price);
-        assets.push(Asset(name,ipfs,false,assetsAmount,price));
+        assetsData[assetsAmount] = Asset(name,ipfs,false,assetsAmount,price,_token);
+        assets.push(Asset(name,ipfs,false,assetsAmount,price,_token));
     }
 
     function updateAssetPrice(uint256 _assetId,uint256 _price) public {
@@ -117,6 +141,15 @@ contract Assets is ExpiryHelper, KeyHelper, HederaTokenService {
     function mintAsset(uint256 _assetId)public payable{
         //require asset bought
         //require(assetsData[_assetId].price >= msg.value);
+        int responseTransfer = HederaTokenService.transferToken(
+            assetsData[_assetId].payingToken,
+            msg.sender,
+            address(this),
+            int64(int(assetsData[_assetId].price))
+        );
+        if (responseTransfer != HederaResponseCodes.SUCCESS) {
+            revert("Transfer Failed");
+        }
         //increase tokenAmount
         tokenAmount += 1;
         //create metadata 
@@ -135,7 +168,7 @@ contract Assets is ExpiryHelper, KeyHelper, HederaTokenService {
         if(responseT != HederaResponseCodes.SUCCESS){
             revert("Failed to transfer non-fungible token");
         }
-        amount += msg.value;
+        amount[assetsData[_assetId].payingToken] += assetsData[_assetId].price;
     }
 
     function generateMetadata(uint256 tokenId,string memory ipfs)
