@@ -75,7 +75,23 @@ contract Pool is HederaTokenService {
     }
 
     function withdrawLendedTokens()public{
-
+        //transfer tokens
+        int responseTransfer = HederaTokenService.transferToken(
+            lendedToken,            
+            address(this),
+            msg.sender,
+            int64(int(userData[msg.sender].lendedAmount))
+        );
+        if (responseTransfer != HederaResponseCodes.SUCCESS) {
+            revert("Transfer Failed");
+        }
+        //set lended tokens to 0
+        userData[msg.sender].lendedAmount = 0;
+        //stop the lending period and add the rewards
+        uint rewards = calculateRewards(userData[msg.sender].lendedAmount,userData[msg.sender].startTimestamp);
+        uint accumulatedRewards = userData[msg.sender].lockedRewards;
+        //update user rewards
+        userData[msg.sender].lockedRewards = accumulatedRewards+rewards;
     }
 
     function withdrawRewards()public{
