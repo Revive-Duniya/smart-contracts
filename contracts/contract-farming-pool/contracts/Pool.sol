@@ -69,11 +69,16 @@ contract Pool is HederaTokenService {
         }
     }
 
-    function getUserRewards(address _user) public returns (uint){
+    function getUserRewards(address _user) public view returns (uint){
+        //actual period rewards + amount lockedrewards
+        return calculateRewards(userData[_user].lendedAmount,userData[_user].startTimestamp) + userData[_user].lockedRewards;
+    }
+
+    function withdrawLendedTokens()public{
 
     }
 
-    function withdrawTokens()public{
+    function withdrawRewards()public{
 
     }
 
