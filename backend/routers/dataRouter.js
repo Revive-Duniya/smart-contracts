@@ -2,7 +2,12 @@ const express = require('express');
 const ethers = require('ethers');
 const axios = require('axios');
 const dataRouter = express.Router();
+async function getAccountId (evm_address){
+    const profile_data = await axios.get(`${process.env.URL_MIRROR_NODE}/api/v1/accounts/${evm_address}`);
+    const {account : account_id} = profile_data.data
+    return account_id;
 
+}
 dataRouter.get('/getSubscriptionPrice', async (req, res) => {
     try {
 
@@ -67,9 +72,8 @@ dataRouter.get('/balances',async (req,res)=>{
         const evm_address = req.query.evmaddress;
         console.log(`${process.env.URL_MIRROR_NODE}/api/v1/accounts/${evm_address}`)
         //get account id from evm address
-        const profile_data = await axios.get(`${process.env.URL_MIRROR_NODE}/api/v1/accounts/${evm_address}`);
+        const account_id = await getAccountId(evm_address);
         //extract account id
-        const {account : account_id} = profile_data.data
         console.log("hedera_account_id",account_id)
         //get tokens balances
         const response_dun_balances = await axios.get(`${process.env.URL_MIRROR_NODE}/api/v1/tokens/${process.env.DUN_ADDRESS}/balances?account.id=${account_id}`);
