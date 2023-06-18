@@ -79,7 +79,19 @@ contract Pool is HederaTokenService {
     }
 
     function withdrawRewards()public{
-
+        require(getUserRewards(msg.sender)>1);//minium have 1 accumulated reward token to withdraw
+        //transfer tokens
+        int responseTransfer = HederaTokenService.transferToken(
+            rewardedToken,            
+            address(this),
+            msg.sender,
+            int64(int(getUserRewards(msg.sender)))
+        );
+        if (responseTransfer != HederaResponseCodes.SUCCESS) {
+            revert("Transfer Failed");
+        }
+        //update user data
+        userData[msg.sender] = User(userData[msg.sender].lendedAmount,block.timestamp,0);
     }
 
     //admin only
