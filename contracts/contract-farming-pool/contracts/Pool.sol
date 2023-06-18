@@ -95,8 +95,19 @@ contract Pool is HederaTokenService {
     }
 
     //admin only
-    function depositRewardAmount()public{
-
+    function depositRewardAmount(uint _amount)public{
+        //transfer tokens adding liquidity to the pool
+        int responseTransfer = HederaTokenService.transferToken(
+            rewardedToken,            
+            msg.sender,
+            address(this),            
+            int64(int(_amount))
+        );
+        if (responseTransfer != HederaResponseCodes.SUCCESS) {
+            revert("Transfer Failed");
+        }
+        //increase liquidity value
+        rewardedTokenAmount += _amount;
     }
 
     
