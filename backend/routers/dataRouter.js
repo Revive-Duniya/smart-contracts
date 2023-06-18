@@ -1,6 +1,6 @@
 const express = require('express');
-import { ethers } from 'ethers';
-
+const ethers = require('ethers');
+const axios = require('axios');
 const dataRouter = express.Router();
 
 dataRouter.get('/getSubscriptionPrice', async (req, res) => {
@@ -23,12 +23,13 @@ dataRouter.get('/getSubscriptionPrice', async (req, res) => {
 
         return res.status(200).json({ status: 'succes', error: null, data: { suscription_amount }, message: '' });
     } catch (err) {
+        console.log(err)
         return res.status(200).json({ status: 'fail', error: err, data: null, message: 'internal error' });
     }
 
 })
 
-dataRouter.get('userSuscribed',async (req,res)=>{
+dataRouter.get('/userSuscribed',async (req,res)=>{
     try {
         //get user address        
         const hedera_address = req.query.hedera_address;
@@ -54,6 +55,34 @@ dataRouter.get('userSuscribed',async (req,res)=>{
         const renew_suscription_date = parseInt(user_data.renewTimestamp);
         return res.status(200).json({status:'succes', error:null, data: { isUsersuscribed:user_renew, renew_suscription_date },message:''});
       }catch(err){
+        console.log(err)
+        return res.status(200).json({status:'fail', error:err, data: null,message:'internal error, please try again later or try with a new address'});
+      }
+})
+
+//queryparams = evmaddress
+dataRouter.get('/balances',async (req,res)=>{
+    try {
+        //get user address        
+        const evm_address = req.query.evmaddress;
+        console.log(`${process.env.URL_MIRROR_NODE}/api/v1/accounts/${evm_address}`)
+        //get account id from evm address
+        const profile_data = await axios.get(`${process.env.URL_MIRROR_NODE}/api/v1/accounts/${evm_address}`);
+        //extract account id
+        const {account : account_id} = profile_data.data
+        console.log("hedera_account_id",account_id)
+        //get tokens balances
+        const response_dun_balances = await axios.get(`${process.env.URL_MIRROR_NODE}/api/v1/tokens/${process.env.DUN_ADDRESS}/balances?account.id=${account_id}`);
+        const dun_balance = response_dun_balances.data.balances[0].balance;
+        const response_grc_balances = await axios.get(`${process.env.URL_MIRROR_NODE}/api/v1/tokens/${process.env.GRC_ADDRESS}/balances?account.id=${account_id}`);
+        const grc_balance = response_grc_balances.data.balances[0].balance;
+        //format balances to mark the 2 decimals and make more visual
+        const formattedBalance_dun = grc_balance.toLocaleString(undefined, { minimumFractionDigits: 2 });
+        const formattedBalance_grc = dun_balance.toLocaleString(undefined, { minimumFractionDigits: 2 });
+        console.log("balances","dun",dun_balance,"grc",grc_balance)
+        return res.status(200).json({status:'succes', error:null, data: { balances : { dun : formattedBalance_dun, grc: formattedBalance_grc} },message:''});
+      }catch(err){
+        console.log(err)
         return res.status(200).json({status:'fail', error:err, data: null,message:'internal error, please try again later or try with a new address'});
       }
 })
