@@ -18,7 +18,7 @@ async function deployFactoryContract() {
     const contractCreate = new ContractCreateFlow()
         .setGas(1000000)
         .setBytecode(bytecode)
-        .setConstructorParameters(new ContractFunctionParameters().addUint256(10000).addAddress('0x0000000000000000000000000000000000dc1af5'))//100HBAR SUBSCRIPTION PRICE
+        .setConstructorParameters(new ContractFunctionParameters().addUint256(20000).addAddress('0x0000000000000000000000000000000000e1c670'))//100HBAR SUBSCRIPTION PRICE
 
     //Sign the transaction with the client operator key and submit to a Hedera network
     const txResponse = contractCreate.execute(client);
@@ -55,7 +55,7 @@ async function deployFactoryContract() {
     // console.log("The transaction consensus status " + transactionStatus.toString());
     // buy subscription 
     //Aprove token Allowance
-    const transactionAllowance = new AccountAllowanceApproveTransaction().approveTokenAllowance("0.0.14424821","0.0.4011011", `${newContractId.shard.low}.${newContractId.shard.high}.${newContractId.num.low}`,  100000).freezeWith(client);
+    const transactionAllowance = new AccountAllowanceApproveTransaction().approveTokenAllowance("0.0.14796400","0.0.4011011", `${newContractId.shard.low}.${newContractId.shard.high}.${newContractId.num.low}`,  100000).freezeWith(client);
     
     
     //Sign the transaction with the owner account key
