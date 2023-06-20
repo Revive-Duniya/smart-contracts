@@ -1,8 +1,11 @@
 // Import the express module
 const express = require("express");
+const cors = require('cors');
+
 // Instantiate an Express application
 const app = express();
 const dataRouter = require('./routers/dataRouter');
+app.use(cors());
 
 //parse json input with req.body
 app.use(express.json());
